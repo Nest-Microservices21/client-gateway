@@ -14,14 +14,12 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { PaginationDTO } from 'src/common/dto/pagination.dto';
 import { ParseIdPipe } from './pipe/parseId.pipe';
-import { catchError } from 'rxjs';
+import { catchError, map, timeout, TimeoutError } from 'rxjs';
 import { NATS_SERVICE } from 'src/config/nats.config';
 
 @Controller('products')
 export class ProductsController {
-  constructor(
-    @Inject(NATS_SERVICE) private readonly natsClient: ClientProxy,
-  ) {}
+  constructor(@Inject(NATS_SERVICE) private readonly natsClient: ClientProxy) {}
 
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
@@ -47,13 +45,11 @@ export class ProductsController {
 
   @Get(':id')
   findOne(@Param('id', ParseIdPipe) id: number) {
-    return this.natsClient
-      .send({ cmd: 'product.find_one' }, { id })
-      .pipe(
-        catchError((error) => {
-          throw new RpcException(error);
-        }),
-      );
+    return this.natsClient.send({ cmd: 'product.find_one' }, { id }).pipe(
+      catchError((error) => {
+        throw new RpcException(error);
+      }),
+    );
   }
 
   @Patch(':id')
@@ -72,12 +68,10 @@ export class ProductsController {
 
   @Delete(':id')
   remove(@Param('id', ParseIdPipe) id: number) {
-    return this.natsClient
-      .send({ cmd: 'product.delete' }, { id })
-      .pipe(
-        catchError((error) => {
-          throw new RpcException(error);
-        }),
-      );
+    return this.natsClient.send({ cmd: 'product.delete' }, { id }).pipe(
+      catchError((error) => {
+        throw new RpcException(error);
+      }),
+    );
   }
 }
