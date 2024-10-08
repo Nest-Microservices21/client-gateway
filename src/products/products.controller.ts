@@ -25,21 +25,35 @@ export class ProductsController {
 
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
-    return this.natsClient.send({ cmd: 'product.create' }, createProductDto);
+    return this.natsClient
+      .send({ cmd: 'product.create' }, createProductDto)
+      .pipe(
+        catchError((error) => {
+          throw new RpcException(error);
+        }),
+      );
   }
 
   @Get()
   findAll(@Query() paginationDTO: PaginationDTO) {
-    return this.natsClient.send({ cmd: 'product.find_all' }, paginationDTO);
+    return this.natsClient
+      .send({ cmd: 'product.find_all' }, paginationDTO)
+      .pipe(
+        catchError((error) => {
+          throw new RpcException(error);
+        }),
+      );
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIdPipe) id: number) {
-    return this.natsClient.send({ cmd: 'product.find_one' }, { id }).pipe(
-      catchError((error) => {
-        throw new RpcException(error);
-      }),
-    );
+  findOne(@Param('id', ParseIdPipe) id: number) {
+    return this.natsClient
+      .send({ cmd: 'product.find_one' }, { id })
+      .pipe(
+        catchError((error) => {
+          throw new RpcException(error);
+        }),
+      );
   }
 
   @Patch(':id')
@@ -58,10 +72,12 @@ export class ProductsController {
 
   @Delete(':id')
   remove(@Param('id', ParseIdPipe) id: number) {
-    return this.natsClient.send({ cmd: 'product.delete' }, { id }).pipe(
-      catchError((error) => {
-        throw new RpcException(error);
-      }),
-    );
+    return this.natsClient
+      .send({ cmd: 'product.delete' }, { id })
+      .pipe(
+        catchError((error) => {
+          throw new RpcException(error);
+        }),
+      );
   }
 }
