@@ -17,9 +17,7 @@ import { PatchOrderDto } from './dto/update-order.dto';
 import { NATS_SERVICE } from 'src/config/nats.config';
 @Controller('orders')
 export class OrdersController {
-  constructor(
-    @Inject(NATS_SERVICE) private readonly natsClient: ClientProxy,
-  ) {}
+  constructor(@Inject(NATS_SERVICE) private readonly natsClient: ClientProxy) {}
   @Get()
   async findAll(@Query() paginationDTO: OrderPaginationDto) {
     return this.natsClient.send({ cmd: 'orders.find_all' }, paginationDTO);
@@ -34,13 +32,11 @@ export class OrdersController {
   }
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto) {
-    return this.natsClient
-      .send({ cmd: 'orders.create' }, createOrderDto)
-      .pipe(
-        catchError((error) => {
-          throw new RpcException(error);
-        }),
-      );
+    return this.natsClient.send({ cmd: 'orders.create' }, createOrderDto).pipe(
+      catchError((error) => {
+        throw new RpcException(error);
+      }),
+    );
   }
   @Patch(':id')
   changeOrderStatus(
