@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ProductsModule } from './products/products.module';
 import { ConfigModule } from '@nestjs/config';
 import { OrdersModule } from './orders/orders.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ProductsModule,
@@ -10,6 +11,7 @@ import { OrdersModule } from './orders/orders.module';
       isGlobal: true,
     }),
     OrdersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
