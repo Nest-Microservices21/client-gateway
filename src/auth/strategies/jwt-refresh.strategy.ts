@@ -32,12 +32,11 @@ export class JwtRefreshStrategy extends PassportStrategy(
     });
   }
   async validate(req: Request, payload: AuthJwtPayload) {
-    const refreshToken = req.get('authorization').replace('Bearer', '').trim();
     try {
       const $validatedToken = await firstValueFrom(
         this.client.send(
           { cmd: 'auth.validate_refresh_token' },
-          { id: payload.sub, refreshToken },
+          { id: payload.sub, jti: payload.jti },
         ),
       );
       return $validatedToken;
